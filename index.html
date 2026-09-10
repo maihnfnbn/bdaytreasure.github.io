@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My GitHub Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f9;
+        }
+        .container {
+            text-align: center;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        input[type="text"] {
+            padding: 10px;
+            font-size: 16px;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            width: 200px;
+            margin-right: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #greeting {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #333;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Welcome to My GitHub Page!</h1>
+        <p>Enter your name below:</p>
+        
+        <!-- Input box and Button -->
+        <input type="text" id="userInput" placeholder="Type your name here...">
+        <button onclick="displayGreeting()">Submit</button>
+        
+        <!-- Element where the message will appear -->
+        <p id="greeting"></p>
+    </div>
+
+    <script>
+        function displayGreeting() {
+            // Get the value from the input box
+            const name = document.getElementById("userInput").value;
+            
+            // Display a message if the input isn't empty
+            if (name.trim() !== "") {
+                document.getElementById("greeting").innerText = `Hello, ${name}! Thanks for visiting my site.`;
+            } else {
+                document.getElementById("greeting").innerText = "Please type a name before clicking submit!";
+            }
+        }
+    </script>
+
+</body>
+</html>
