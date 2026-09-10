@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My GitHub Page</title>
+    <title>Treasure Hunt</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -12,67 +12,135 @@
             align-items: center;
             height: 100vh;
             margin: 0;
-            background-color: #f4f4f9;
+            background-color: #1a1a1a;
+            color: white;
+            overflow: hidden;
         }
         .container {
             text-align: center;
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background: #2a2a2a;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+            max-width: 400px;
+            width: 90%;
         }
         input[type="text"] {
-            padding: 10px;
+            padding: 12px;
             font-size: 16px;
-            border: 2px solid #ccc;
-            border-radius: 5px;
-            width: 200px;
-            margin-right: 10px;
+            border: 2px solid #444;
+            border-radius: 6px;
+            width: 80%;
+            margin-bottom: 20px;
+            background: #333;
+            color: white;
+            text-align: center;
+        }
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #ffcc00;
         }
         button {
-            padding: 10px 20px;
+            padding: 12px 24px;
             font-size: 16px;
-            background-color: #007bff;
-            color: white;
+            background-color: #ffcc00;
+            color: #1a1a1a;
             border: none;
-            border-radius: 5px;
+            border-radius: 6px;
             cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
         }
         button:hover {
-            background-color: #0056b3;
+            background-color: #e6b800;
         }
-        #greeting {
+        /* QR Code Page Styling (Hidden Initially) */
+        #victoryPage {
+            display: none;
+        }
+        .qr-image {
+            max-width: 100%;
+            height: auto;
             margin-top: 20px;
-            font-size: 18px;
-            color: #333;
-            font-weight: bold;
+            border-radius: 8px;
+            border: 4px solid white;
+        }
+        /* Fullscreen Wrong Answer Overlay */
+        #wrongOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            opacity: 0;
+            pointer-events: none; /* Allows clicking behind it when invisible */
+            transition: opacity 1.5s ease-out; /* Handles the slow fade away */
+        }
+        #wrongOverlay.show-instant {
+            opacity: 1;
+            pointer-events: auto;
+            transition: none; /* Shows instantly without any fade-in lag */
+        }
+        #wrongOverlay img {
+            max-width: 90%;
+            max-height: 80%;
+            object-fit: contain;
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>Welcome to My GitHub Page!</h1>
-        <p>Enter your name below:</p>
-        
-        <!-- Input box and Button -->
-        <input type="text" id="userInput" placeholder="Type your name here...">
-        <button onclick="displayGreeting()">Submit</button>
-        
-        <!-- Element where the message will appear -->
-        <p id="greeting"></p>
+    <!-- Main Game Box -->
+    <div class="container" id="gameBox">
+        <h1>Treasure Hunt</h1>
+        <p>Enter the secret key to unlock the final prize:</p>
+        <input type="text" id="keyInput" placeholder="Enter key here...">
+        <br>
+        <button onclick="checkKey()">Unlock</button>
+    </div>
+
+    <!-- Victory Screen (QR Code) -->
+    <div class="container" id="victoryPage">
+        <h1>🎉 Success!</h1>
+        <p>You found the treasure! Scan the QR code below:</p>
+        <!-- Refers directly to your uploaded repo image -->
+        <img src="qrcode.png" alt="Secret QR Code" class="qr-image">
+    </div>
+
+    <!-- Full Screen Wrong Overlay -->
+    <div id="wrongOverlay">
+        <!-- Refers directly to your uploaded repo image -->
+        <img src="wrong.png" alt="Incorrect Answer!">
     </div>
 
     <script>
-        function displayGreeting() {
-            // Get the value from the input box
-            const name = document.getElementById("userInput").value;
+        function checkKey() {
+            // CHANGE "SECRET123" TO WHATEVER KEY YOU WANT
+            const correctKey = "secret123"; 
             
-            // Display a message if the input isn't empty
-            if (name.trim() !== "") {
-                document.getElementById("greeting").innerText = `Hello, ${name}! Thanks for visiting my site.`;
+            const userInput = document.getElementById("keyInput").value.trim().toLowerCase();
+            const gameBox = document.getElementById("gameBox");
+            const victoryPage = document.getElementById("victoryPage");
+            const wrongOverlay = document.getElementById("wrongOverlay");
+
+            if (userInput === correctKey.toLowerCase()) {
+                // Hide input box and show QR Code page
+                gameBox.style.display = "none";
+                victoryPage.style.display = "block";
             } else {
-                document.getElementById("greeting").innerText = "Please type a name before clicking submit!";
+                // 1. Show the overlay instantly
+                wrongOverlay.classList.add("show-instant");
+
+                // 2. Wait 1 second (1000ms), then start the fade-away transition
+                setTimeout(() => {
+                    wrongOverlay.classList.remove("show-instant");
+                    // The CSS transition rule (1.5s ease-out) takes over here
+                }, 1000);
             }
         }
     </script>
