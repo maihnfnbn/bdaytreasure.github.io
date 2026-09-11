@@ -1,149 +1,330 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Treasure Hunt</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #1a1a1a;
-            color: white;
-            overflow: hidden;
-        }
-        .container {
-            text-align: center;
-            background: #2a2a2a;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
-            max-width: 400px;
-            width: 90%;
-        }
-        input[type="text"] {
-            padding: 12px;
-            font-size: 16px;
-            border: 2px solid #444;
-            border-radius: 6px;
-            width: 80%;
-            margin-bottom: 20px;
-            background: #333;
-            color: white;
-            text-align: center;
-        }
-        input[type="text"]:focus {
-            outline: none;
-            border-color: #ffcc00;
-        }
-        button {
-            padding: 12px 24px;
-            font-size: 16px;
-            background-color: #ffcc00;
-            color: #1a1a1a;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: background 0.2s;
-        }
-        button:hover {
-            background-color: #e6b800;
-        }
-        /* QR Code Page Styling (Hidden Initially) */
-        #victoryPage {
-            display: none;
-        }
-        .qr-image {
-            max-width: 100%;
-            height: auto;
-            margin-top: 20px;
-            border-radius: 8px;
-            border: 4px solid white;
-        }
-        /* Fullscreen Wrong Answer Overlay */
-        #wrongOverlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background-color: rgba(0, 0, 0, 0.9);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            opacity: 0;
-            pointer-events: none; /* Allows clicking behind it when invisible */
-            transition: opacity 1.5s ease-out; /* Handles the slow fade away */
-        }
-        #wrongOverlay.show-instant {
-            opacity: 1;
-            pointer-events: auto;
-            transition: none; /* Shows instantly without any fade-in lag */
-        }
-        #wrongOverlay img {
-            max-width: 90%;
-            max-height: 80%;
-            object-fit: contain;
-        }
-    </style>
+
+```
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        background-color: #1a1a1a;
+        color: white;
+        overflow: hidden;
+    }
+
+    .container {
+        text-align: center;
+        background: #2a2a2a;
+        padding: 40px;
+        border-radius: 12px;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+        max-width: 400px;
+        width: 90%;
+    }
+
+    input[type="text"] {
+        padding: 12px;
+        font-size: 16px;
+        border: 2px solid #444;
+        border-radius: 6px;
+        width: 80%;
+        margin-bottom: 20px;
+        background: #333;
+        color: white;
+        text-align: center;
+    }
+
+    input[type="text"]:focus {
+        outline: none;
+        border-color: #ffcc00;
+    }
+
+    button {
+        padding: 12px 24px;
+        font-size: 16px;
+        background-color: #ffcc00;
+        color: #1a1a1a;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: background 0.2s;
+    }
+
+    button:hover {
+        background-color: #e6b800;
+    }
+
+    /* QR Code Page Styling */
+    #victoryPage {
+        display: none;
+        position: relative;
+        z-index: 2;
+    }
+
+    .qr-image {
+        max-width: 100%;
+        height: auto;
+        margin-top: 20px;
+        border-radius: 8px;
+        border: 4px solid white;
+    }
+
+    /* Confetti Canvas */
+    #confettiCanvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        pointer-events: none;
+        z-index: 10000;
+    }
+
+    /* Fullscreen Wrong Answer Overlay */
+    #wrongOverlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, 0.9);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 1.5s ease-out;
+    }
+
+    #wrongOverlay.show-instant {
+        opacity: 1;
+        pointer-events: auto;
+        transition: none;
+    }
+
+    #wrongOverlay img {
+        max-width: 90%;
+        max-height: 80%;
+        object-fit: contain;
+    }
+</style>
+```
+
 </head>
+
 <body>
 
-    <!-- Main Game Box -->
-    <div class="container" id="gameBox">
-        <h1>Treasure Hunt</h1>
-        <p>Enter the secret key to unlock the final prize:</p>
-        <input type="text" id="keyInput" placeholder="Enter key here...">
-        <br>
-        <button onclick="checkKey()">Unlock</button>
-    </div>
+```
+<!-- Confetti -->
+<canvas id="confettiCanvas"></canvas>
 
-    <!-- Victory Screen (QR Code) -->
-    <div class="container" id="victoryPage">
-        <h1>🎉 Success!</h1>
-        <p>You found the treasure! Scan the QR code below:</p>
-        <!-- Refers directly to your uploaded repo image -->
-        <img src="qrcode.png" alt="Secret QR Code" class="qr-image">
-    </div>
+<!-- Main Game Box -->
+<div class="container" id="gameBox">
+    <h1>Treasure Hunt</h1>
+    <p>Enter the secret key to unlock the final prize:</p>
 
-    <!-- Full Screen Wrong Overlay -->
-    <div id="wrongOverlay">
-        <!-- Refers directly to your uploaded repo image -->
-        <img src="wrong.png" alt="Incorrect Answer!">
-    </div>
+    <input
+        type="text"
+        id="keyInput"
+        placeholder="Enter key here..."
+    >
 
-    <script>
-        function checkKey() {
-            // CHANGE "SECRET123" TO WHATEVER KEY YOU WANT
-            const correctKey = "secret123"; 
-            
-            const userInput = document.getElementById("keyInput").value.trim().toLowerCase();
-            const gameBox = document.getElementById("gameBox");
-            const victoryPage = document.getElementById("victoryPage");
-            const wrongOverlay = document.getElementById("wrongOverlay");
+    <br>
 
-            if (userInput === correctKey.toLowerCase()) {
-                // Hide input box and show QR Code page
-                gameBox.style.display = "none";
-                victoryPage.style.display = "block";
-            } else {
-                // 1. Show the overlay instantly
-                wrongOverlay.classList.add("show-instant");
+    <button onclick="checkKey()">Unlock</button>
+</div>
 
-                // 2. Wait 1 second (1000ms), then start the fade-away transition
-                setTimeout(() => {
-                    wrongOverlay.classList.remove("show-instant");
-                    // The CSS transition rule (1.5s ease-out) takes over here
-                }, 1000);
-            }
+<!-- Victory Screen -->
+<div class="container" id="victoryPage">
+    <h1>🎉 Success!</h1>
+    <p>You found the treasure! Scan the QR code below:</p>
+
+    <img
+        src="qrcode.jpg"
+        alt="Secret QR Code"
+        class="qr-image"
+    >
+</div>
+
+<!-- Full Screen Wrong Overlay -->
+<div id="wrongOverlay">
+    <img src="wrong.png" alt="Incorrect Answer!">
+    <h>Is you sure?</h>
+</div>
+
+<script>
+    // ==============================
+    // CONFETTI SETUP
+    // ==============================
+
+    const confettiCanvas = document.getElementById("confettiCanvas");
+    const ctx = confettiCanvas.getContext("2d");
+
+    let confettiPieces = [];
+    let confettiAnimation;
+
+    function resizeCanvas() {
+        confettiCanvas.width = window.innerWidth;
+        confettiCanvas.height = window.innerHeight;
+    }
+
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
+
+    function createConfetti() {
+        confettiPieces = [];
+
+        const colors = [
+            "#ffcc00",
+            "#ff4d4d",
+            "#4dd2ff",
+            "#66ff66",
+            "#ff66cc",
+            "#ffffff"
+        ];
+
+        for (let i = 0; i < 180; i++) {
+            confettiPieces.push({
+                x: Math.random() * confettiCanvas.width,
+                y: Math.random() * -confettiCanvas.height,
+                width: Math.random() * 8 + 5,
+                height: Math.random() * 14 + 6,
+                color: colors[Math.floor(Math.random() * colors.length)],
+                speedY: Math.random() * 4 + 3,
+                speedX: Math.random() * 4 - 2,
+                rotation: Math.random() * 360,
+                rotationSpeed: Math.random() * 8 - 4,
+                gravity: 0.05
+            });
         }
-    </script>
+    }
+
+    function animateConfetti() {
+        ctx.clearRect(
+            0,
+            0,
+            confettiCanvas.width,
+            confettiCanvas.height
+        );
+
+        let piecesStillFalling = false;
+
+        confettiPieces.forEach(piece => {
+            piece.speedY += piece.gravity;
+            piece.y += piece.speedY;
+            piece.x += piece.speedX;
+            piece.rotation += piece.rotationSpeed;
+
+            if (piece.y < confettiCanvas.height + 50) {
+                piecesStillFalling = true;
+            }
+
+            ctx.save();
+
+            ctx.translate(
+                piece.x,
+                piece.y
+            );
+
+            ctx.rotate(
+                piece.rotation * Math.PI / 180
+            );
+
+            ctx.fillStyle = piece.color;
+
+            ctx.fillRect(
+                -piece.width / 2,
+                -piece.height / 2,
+                piece.width,
+                piece.height
+            );
+
+            ctx.restore();
+        });
+
+        if (piecesStillFalling) {
+            confettiAnimation = requestAnimationFrame(animateConfetti);
+        } else {
+            ctx.clearRect(
+                0,
+                0,
+                confettiCanvas.width,
+                confettiCanvas.height
+            );
+        }
+    }
+
+    function launchConfetti() {
+        cancelAnimationFrame(confettiAnimation);
+        createConfetti();
+        animateConfetti();
+    }
+
+
+    // ==============================
+    // CHECK ANSWER
+    // ==============================
+
+    function checkKey() {
+
+        // CHANGE THIS TO WHATEVER KEY YOU WANT
+        const correctKey = "secret123";
+
+        const userInput = document
+            .getElementById("keyInput")
+            .value
+            .trim()
+            .toLowerCase();
+
+        const gameBox = document.getElementById("gameBox");
+        const victoryPage = document.getElementById("victoryPage");
+        const wrongOverlay = document.getElementById("wrongOverlay");
+
+        if (userInput === correctKey.toLowerCase()) {
+
+            // Show confetti
+            launchConfetti();
+
+            // Hide input box
+            gameBox.style.display = "none";
+
+            // Show victory page
+            victoryPage.style.display = "block";
+
+        } else {
+
+            // Show the overlay instantly
+            wrongOverlay.classList.add("show-instant");
+
+            // Wait 1 second, then fade away
+            setTimeout(() => {
+                wrongOverlay.classList.remove("show-instant");
+            }, 1000);
+        }
+    }
+
+
+    // Allow Enter key to submit the answer
+    document
+        .getElementById("keyInput")
+        .addEventListener("keydown", function(event) {
+
+            if (event.key === "Enter") {
+                checkKey();
+            }
+
+        });
+</script>
 
 </body>
 </html>
