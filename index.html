@@ -278,7 +278,7 @@
     function checkKey() {
 
         // CHANGE THIS TO WHATEVER KEY YOU WANT
-        const correctKey = "secret123";
+        const correctKey = "JDIJYK";
 
         const userInput = document
             .getElementById("keyInput")
@@ -290,7 +290,7 @@
         const victoryPage = document.getElementById("victoryPage");
         const wrongOverlay = document.getElementById("wrongOverlay");
 
-        if (userInput === correctKey.toLowerCase()) {
+        if (userInput.toLowerCase() === correctKey.toLowerCase()) {
 
             // Show confetti
             launchConfetti();
